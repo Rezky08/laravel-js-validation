@@ -19,15 +19,15 @@ class validationTest {
       start_date: ["required"],
       end_date: ["required_if:name,2"],
     });
-    this.instanceValidation.validateAll();
-    console.log(this.state.errors);
+    // this.instanceValidation.validateAll();
   }
   setState(state) {
     this.state = { ...this.state, ...state };
   }
   render() {
-    this.instanceValidation.blurEventHandler("test", () => console.log("Test"));
+    this.instanceValidation.eventHandler(undefined, "start_date");
   }
 }
 let validator = new validationTest();
 validator.render();
+console.log(validator.state.errors);

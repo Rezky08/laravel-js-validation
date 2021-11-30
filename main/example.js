@@ -35,16 +35,16 @@ var validationTest = /** @class */ (function () {
             start_date: ["required"],
             end_date: ["required_if:name,2"],
         });
-        this.instanceValidation.validateAll();
-        console.log(this.state.errors);
+        // this.instanceValidation.validateAll();
     }
     validationTest.prototype.setState = function (state) {
         this.state = __assign(__assign({}, this.state), state);
     };
     validationTest.prototype.render = function () {
-        this.instanceValidation.blurEventHandler("test", function () { return console.log("Test"); });
+        this.instanceValidation.eventHandler(undefined, "start_date");
     };
     return validationTest;
 }());
 var validator = new validationTest();
 validator.render();
+console.log(validator.state.errors);

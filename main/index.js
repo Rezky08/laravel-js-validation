@@ -87,12 +87,14 @@ var instanceValidation = /** @class */ (function () {
         });
         return result;
     };
-    instanceValidation.prototype.blurEventHandler = function (e, callback) {
-        var node = e.currentTarget;
-        var field = node === null || node === void 0 ? void 0 : node.getAttribute("name");
+    instanceValidation.prototype.eventHandler = function (e, fieldName, callback) {
+        var node = e === null || e === void 0 ? void 0 : e.currentTarget;
+        var field = fieldName !== null && fieldName !== void 0 ? fieldName : node === null || node === void 0 ? void 0 : node.getAttribute("name");
         var rule = this.rules[field];
         var result = this.validate(field, rule);
-        callback(result);
+        if (typeof callback === "function") {
+            callback(result);
+        }
     };
     return instanceValidation;
 }());

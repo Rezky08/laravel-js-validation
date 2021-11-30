@@ -106,11 +106,17 @@ export default class instanceValidation {
     return result;
   }
 
-  blurEventHandler(e: React.BaseSyntheticEvent, callback: Function) {
-    const node: Element = e.currentTarget;
-    let field = node?.getAttribute("name");
+  eventHandler(
+    e?: React.BaseSyntheticEvent,
+    fieldName?: string,
+    callback?: Function
+  ) {
+    const node: Element = e?.currentTarget;
+    let field = fieldName ?? node?.getAttribute("name");
     let rule = this.rules[field];
     let result = this.validate(field, rule);
-    callback(result);
+    if (typeof callback === "function") {
+      callback(result);
+    }
   }
 }
