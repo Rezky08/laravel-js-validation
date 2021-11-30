@@ -1,0 +1,15 @@
+{
+  "name": "laravel-js-validation",
+  "version": "1.0.0",
+  "description": "for validate input",
+  "main": "main/index.js",
+  "scripts": {
+    "test": "node ./main/example.js"
+  },
+  "author": "rezky",
+  "license": "ISC",
+  "dependencies": {
+    "@types/i18n-js": "^3.8.2",
+    "i18n-js": "^3.8.0"
+  }
+}
