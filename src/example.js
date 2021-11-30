@@ -7,6 +7,8 @@ class validationTest {
         name: "test",
         password: "abc",
         password_confirmation: "abc",
+        start_date: "",
+        end_date: new Date(),
       },
       errors: {},
     };
@@ -15,10 +17,12 @@ class validationTest {
       name: "required|filled",
       password: ["required", "confirmed"],
       password_confirmation: ["required"],
+      start_date: ["required"],
+      end_date: ["required"],
     });
-    console.log(this.state.errors);
     instanceValidation.validate();
-    console.log(this.state.errors);
+    this.setState({ fields: { ...this.state.fields, start_date: new Date() } });
+    instanceValidation.validate();
   }
   setState(state) {
     this.state = { ...this.state, ...state };

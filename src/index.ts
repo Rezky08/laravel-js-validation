@@ -45,10 +45,13 @@ export default class instanceValidation {
       const message = resolveMessage(rule, { attribute: field });
       this.errors[field] = message;
       this.setError(field, rule, message);
+    } else {
+      delete this.errors[field];
+      this.setError(null, null, "unset");
     }
   }
 
-  setError(field: string, rule: availableRules, message: string): void {
+  setError(field?: string, rule?: availableRules, message?: string): void {
     if (typeof this.bind.setState === "function") {
       this.bind.setState({ errors: this.errors });
     }

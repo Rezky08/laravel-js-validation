@@ -19,6 +19,8 @@ var validationTest = /** @class */ (function () {
                 name: "test",
                 password: "abc",
                 password_confirmation: "abc",
+                start_date: "",
+                end_date: new Date(),
             },
             errors: {},
         };
@@ -27,8 +29,11 @@ var validationTest = /** @class */ (function () {
             name: "required|filled",
             password: ["required", "confirmed"],
             password_confirmation: ["required"],
+            start_date: ["required"],
+            end_date: ["required"],
         });
-        console.log(this.state.errors);
+        instanceValidation.validate();
+        this.setState({ fields: __assign(__assign({}, this.state.fields), { start_date: new Date() }) });
         instanceValidation.validate();
         console.log(this.state.errors);
     }

@@ -39,6 +39,10 @@ var instanceValidation = /** @class */ (function () {
             this.errors[field] = message;
             this.setError(field, rule, message);
         }
+        else {
+            delete this.errors[field];
+            this.setError(null, null, "unset");
+        }
     };
     instanceValidation.prototype.setError = function (field, rule, message) {
         if (typeof this.bind.setState === "function") {
