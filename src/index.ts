@@ -1,6 +1,7 @@
 import { resolveMessage } from "./messages";
 import { validate, availableRules, validationResult } from "./validators";
 import { paramMap, ruleParamRequired } from "./values";
+import React = require("react");
 
 export default class instanceValidation {
   bind: any;
@@ -22,6 +23,10 @@ export default class instanceValidation {
 
   useMessages(messages: Object) {
     this.messages = messages;
+  }
+
+  getFields(): Object {
+    return this.bind?.state?.fields;
   }
 
   getRule(rule: string) {
@@ -70,30 +75,42 @@ export default class instanceValidation {
     }
   }
 
-  validate(): boolean {
+  validateAll() {
     Object.entries(this.rules).forEach(([key, value]) => {
-      if (typeof value === "string") {
-        value = value.split("|");
-      }
-
-      let fieldValue = this.bind?.state?.fields;
-      fieldValue = fieldValue[key];
-
-      value.forEach((rule: availableRules) => {
-        let selectedRule = availableRules[this.getRule(rule)];
-
-        if (!!selectedRule) {
-          fieldValue = this.resolveValue(key, rule);
-
-          let result = validate(fieldValue, selectedRule);
-          this.resolveError(key, rule, result, fieldValue);
-        }
-      });
+      this.validate(key, value);
     });
-    return false;
   }
 
-  blurEventHandler() {
-    this.validate();
+  validate(field: string, value: any): validationResult {
+    let result: validationResult = {
+      valid: false,
+      message: null,
+    };
+    if (typeof value === "string") {
+      value = value.split("|");
+    }
+
+    let fieldValue = this.getFields();
+    fieldValue = fieldValue[field];
+
+    value?.forEach((rule: availableRules) => {
+      let selectedRule = availableRules[this.getRule(rule)];
+
+      if (!!selectedRule) {
+        fieldValue = this.resolveValue(field, rule);
+
+        result = validate(fieldValue, selectedRule);
+        this.resolveError(field, rule, result, fieldValue);
+      }
+    });
+    return result;
+  }
+
+  blurEventHandler(e: React.BaseSyntheticEvent, callback: Function) {
+    const node: Element = e.currentTarget;
+    let field = node?.getAttribute("name");
+    let rule = this.rules[field];
+    let result = this.validate(field, rule);
+    callback(result);
   }
 }

@@ -10,8 +10,11 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-var index_js_1 = require("./index.js");
+var index_js_1 = __importDefault(require("./index.js"));
 var validationTest = /** @class */ (function () {
     function validationTest() {
         this.state = {
@@ -24,20 +27,24 @@ var validationTest = /** @class */ (function () {
             },
             errors: {},
         };
-        var instanceValidation = new index_js_1.default(this);
-        instanceValidation.useRules({
+        this.instanceValidation = new index_js_1.default(this);
+        this.instanceValidation.useRules({
             name: "required|filled",
             password: ["required", "confirmed"],
             password_confirmation: ["required"],
             start_date: ["required"],
             end_date: ["required_if:name,2"],
         });
-        instanceValidation.validate();
+        this.instanceValidation.validateAll();
         console.log(this.state.errors);
     }
     validationTest.prototype.setState = function (state) {
         this.state = __assign(__assign({}, this.state), state);
     };
+    validationTest.prototype.render = function () {
+        this.instanceValidation.blurEventHandler("test", function () { return console.log("Test"); });
+    };
     return validationTest;
 }());
-new validationTest();
+var validator = new validationTest();
+validator.render();

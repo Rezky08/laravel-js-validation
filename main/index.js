@@ -16,6 +16,10 @@ var instanceValidation = /** @class */ (function () {
     instanceValidation.prototype.useMessages = function (messages) {
         this.messages = messages;
     };
+    instanceValidation.prototype.getFields = function () {
+        var _a, _b;
+        return (_b = (_a = this.bind) === null || _a === void 0 ? void 0 : _a.state) === null || _b === void 0 ? void 0 : _b.fields;
+    };
     instanceValidation.prototype.getRule = function (rule) {
         var onlyRule = rule === null || rule === void 0 ? void 0 : rule.split(":")[0];
         return onlyRule;
@@ -55,29 +59,40 @@ var instanceValidation = /** @class */ (function () {
             this.bind.setState({ errors: this.errors });
         }
     };
-    instanceValidation.prototype.validate = function () {
+    instanceValidation.prototype.validateAll = function () {
         var _this = this;
         Object.entries(this.rules).forEach(function (_a) {
-            var _b, _c;
             var key = _a[0], value = _a[1];
-            if (typeof value === "string") {
-                value = value.split("|");
-            }
-            var fieldValue = (_c = (_b = _this.bind) === null || _b === void 0 ? void 0 : _b.state) === null || _c === void 0 ? void 0 : _c.fields;
-            fieldValue = fieldValue[key];
-            value.forEach(function (rule) {
-                var selectedRule = validators_1.availableRules[_this.getRule(rule)];
-                if (!!selectedRule) {
-                    fieldValue = _this.resolveValue(key, rule);
-                    var result = (0, validators_1.validate)(fieldValue, selectedRule);
-                    _this.resolveError(key, rule, result, fieldValue);
-                }
-            });
+            _this.validate(key, value);
         });
-        return false;
     };
-    instanceValidation.prototype.blurEventHandler = function () {
-        this.validate();
+    instanceValidation.prototype.validate = function (field, value) {
+        var _this = this;
+        var result = {
+            valid: false,
+            message: null,
+        };
+        if (typeof value === "string") {
+            value = value.split("|");
+        }
+        var fieldValue = this.getFields();
+        fieldValue = fieldValue[field];
+        value === null || value === void 0 ? void 0 : value.forEach(function (rule) {
+            var selectedRule = validators_1.availableRules[_this.getRule(rule)];
+            if (!!selectedRule) {
+                fieldValue = _this.resolveValue(field, rule);
+                result = (0, validators_1.validate)(fieldValue, selectedRule);
+                _this.resolveError(field, rule, result, fieldValue);
+            }
+        });
+        return result;
+    };
+    instanceValidation.prototype.blurEventHandler = function (e, callback) {
+        var node = e.currentTarget;
+        var field = node === null || node === void 0 ? void 0 : node.getAttribute("name");
+        var rule = this.rules[field];
+        var result = this.validate(field, rule);
+        callback(result);
     };
     return instanceValidation;
 }());

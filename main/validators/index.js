@@ -1,9 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validate = exports.availableRules = void 0;
-var required_1 = require("./required");
-var confirmed_1 = require("./confirmed");
-var requiredIf_1 = require("./requiredIf");
+var required_1 = __importDefault(require("./required"));
+var confirmed_1 = __importDefault(require("./confirmed"));
+var requiredIf_1 = __importDefault(require("./requiredIf"));
 var availableRules;
 (function (availableRules) {
     availableRules["required"] = "required";

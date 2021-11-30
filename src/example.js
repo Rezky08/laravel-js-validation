@@ -1,5 +1,4 @@
 import ReactFormValidation from "./index.js";
-
 class validationTest {
   constructor() {
     this.state = {
@@ -12,19 +11,23 @@ class validationTest {
       },
       errors: {},
     };
-    const instanceValidation = new ReactFormValidation(this);
-    instanceValidation.useRules({
+    this.instanceValidation = new ReactFormValidation(this);
+    this.instanceValidation.useRules({
       name: "required|filled",
       password: ["required", "confirmed"],
       password_confirmation: ["required"],
       start_date: ["required"],
       end_date: ["required_if:name,2"],
     });
-    instanceValidation.validate();
+    this.instanceValidation.validateAll();
     console.log(this.state.errors);
   }
   setState(state) {
     this.state = { ...this.state, ...state };
   }
+  render() {
+    this.instanceValidation.blurEventHandler("test", () => console.log("Test"));
+  }
 }
-new validationTest();
+let validator = new validationTest();
+validator.render();
