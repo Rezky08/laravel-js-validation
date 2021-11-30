@@ -5,6 +5,7 @@ enum confirmedParams {
 
 const paramMap = (field: string, fields: Object) => {
   const retVal = {};
+  retVal["field"] = field;
   retVal["value"] = fields[field];
   retVal["value_confirmation"] = fields[`${field}_confirmation`];
   return retVal;

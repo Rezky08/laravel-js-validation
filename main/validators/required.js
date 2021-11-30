@@ -1,5 +1,14 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.default = (function (value) {
-    return !!value;
+var _1 = require(".");
+var messages_1 = require("../messages");
+exports.default = (function (_a) {
+    var field = _a.field, value = _a.value;
+    var isValid = !!value;
+    return {
+        valid: isValid,
+        message: isValid === false
+            ? (0, messages_1.resolveMessage)(_1.availableRules.required, { attribute: field })
+            : null,
+    };
 });

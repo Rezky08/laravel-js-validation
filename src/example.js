@@ -4,11 +4,11 @@ class validationTest {
   constructor() {
     this.state = {
       fields: {
-        name: "test",
+        name: "2",
         password: "abc",
         password_confirmation: "abc",
         start_date: "",
-        end_date: new Date(),
+        end_date: "",
       },
       errors: {},
     };
@@ -18,11 +18,10 @@ class validationTest {
       password: ["required", "confirmed"],
       password_confirmation: ["required"],
       start_date: ["required"],
-      end_date: ["required"],
+      end_date: ["required_if:name,2"],
     });
     instanceValidation.validate();
-    this.setState({ fields: { ...this.state.fields, start_date: new Date() } });
-    instanceValidation.validate();
+    console.log(this.state.errors);
   }
   setState(state) {
     this.state = { ...this.state, ...state };

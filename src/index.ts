@@ -1,5 +1,5 @@
 import { resolveMessage } from "./messages";
-import { validate, availableRules } from "./validators";
+import { validate, availableRules, validationResult } from "./validators";
 import { paramMap, ruleParamRequired } from "./values";
 
 export default class instanceValidation {
@@ -24,27 +24,40 @@ export default class instanceValidation {
     this.messages = messages;
   }
 
-  getRules() {
-    // console.log(this.rules);
+  getRule(rule: string) {
+    let onlyRule = rule?.split(":")[0];
+    return onlyRule;
+  }
+
+  getRuleParam(rule: string) {
+    let onlyParam = rule?.split(":")[1];
+    return onlyParam?.split(",");
   }
 
   resolveValue(field: string, rule: availableRules) {
     const fields = this.bind?.state?.fields;
     // require param
-    let requireParam = ruleParamRequired[rule];
+    let requireParam = ruleParamRequired[this.getRule(rule)];
     if (!!requireParam) {
       requireParam = paramMap[requireParam];
     } else {
-      return fields[field];
+      return {
+        field: field,
+        value: fields[field],
+      };
     }
-    return requireParam(field, fields);
+    return requireParam(field, fields, this.getRuleParam(rule));
   }
 
-  resolveError(field: string, rule: availableRules, validationResult: boolean) {
-    if (!validationResult) {
-      const message = resolveMessage(rule, { attribute: field });
-      this.errors[field] = message;
-      this.setError(field, rule, message);
+  resolveError(
+    field: string,
+    rule: availableRules,
+    validationResult: validationResult,
+    fieldValue?: Object
+  ) {
+    if (!validationResult.valid) {
+      this.errors[field] = validationResult.message;
+      this.setError(field, rule, validationResult.message);
     } else {
       delete this.errors[field];
       this.setError(null, null, "unset");
@@ -58,8 +71,6 @@ export default class instanceValidation {
   }
 
   validate(): boolean {
-    this.getRules();
-
     Object.entries(this.rules).forEach(([key, value]) => {
       if (typeof value === "string") {
         value = value.split("|");
@@ -69,13 +80,13 @@ export default class instanceValidation {
       fieldValue = fieldValue[key];
 
       value.forEach((rule: availableRules) => {
-        let selectedRule = availableRules[rule];
+        let selectedRule = availableRules[this.getRule(rule)];
 
         if (!!selectedRule) {
           fieldValue = this.resolveValue(key, rule);
 
           let result = validate(fieldValue, selectedRule);
-          this.resolveError(key, rule, result);
+          this.resolveError(key, rule, result, fieldValue);
         }
       });
     });

@@ -9,6 +9,7 @@ var confirmedParams;
 exports.confirmedParams = confirmedParams;
 var paramMap = function (field, fields) {
     var retVal = {};
+    retVal["field"] = field;
     retVal["value"] = fields[field];
     retVal["value_confirmation"] = fields["".concat(field, "_confirmation")];
     return retVal;
