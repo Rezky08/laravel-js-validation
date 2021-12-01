@@ -20,10 +20,69 @@ var validationTest = /** @class */ (function () {
         this.state = {
             fields: {
                 name: "2",
+                status: true,
                 password: "abc",
                 password_confirmation: "abc",
-                start_date: "",
-                end_date: "",
+                start_date: new Date(),
+                end_date: new Date(),
+                nested: {
+                    nestedV1: "test",
+                },
+                nestedArrayObjectEmpty: [],
+                nestedArrayObject: [
+                    {
+                        name: "",
+                        point: 1,
+                    },
+                    {
+                        name: "test",
+                        point: 1,
+                    },
+                    {
+                        name: "test",
+                        point: 1,
+                    },
+                ],
+                nestedArrayObjectNested: [
+                    {
+                        nested: [
+                            {
+                                name: "",
+                                point: 1,
+                            },
+                            ,
+                            {
+                                name: "test",
+                                point: 1,
+                            },
+                            ,
+                            {
+                                name: "test",
+                                point: 1,
+                            },
+                            ,
+                        ],
+                    },
+                    {
+                        nested: [
+                            {
+                                name: "",
+                                point: 1,
+                            },
+                            ,
+                            {
+                                name: "test",
+                                point: 1,
+                            },
+                            ,
+                            {
+                                name: "test",
+                                point: 1,
+                            },
+                            ,
+                        ],
+                    },
+                ],
             },
             errors: {},
         };
@@ -34,6 +93,9 @@ var validationTest = /** @class */ (function () {
             password_confirmation: ["required"],
             start_date: ["required"],
             end_date: ["required_if:name,2"],
+            "nestedArrayObjectEmpty.*": ["required"],
+            "nestedArrayObject.*.name": ["required"],
+            "nestedArrayObjectNested.*.nested.*.name": ["required_if:status,true"],
         });
         // this.instanceValidation.validateAll();
     }
@@ -41,10 +103,11 @@ var validationTest = /** @class */ (function () {
         this.state = __assign(__assign({}, this.state), state);
     };
     validationTest.prototype.render = function () {
-        this.instanceValidation.eventHandler(undefined, "start_date");
+        // console.log(this.instanceValidation.getField("nestedArrayObject.*.name"));
+        this.instanceValidation.validateAll("password");
+        console.log(this.state.errors);
     };
     return validationTest;
 }());
 var validator = new validationTest();
 validator.render();
-console.log(validator.state.errors);

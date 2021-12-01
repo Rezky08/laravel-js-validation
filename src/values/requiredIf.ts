@@ -1,3 +1,5 @@
+import { get as getWild } from "get-wild";
+
 enum requiredIfParams {
   field = "field",
   field_value = "value",
@@ -5,16 +7,21 @@ enum requiredIfParams {
   other_value = "other_value",
 }
 
-const paramMap = (field: string, fields: Object, ruleParam?: Array<string>) => {
+const paramMap = (
+  field: string,
+  value: any,
+  fields: Object,
+  ruleParam?: Array<string>
+) => {
   const retVal = {};
   retVal[requiredIfParams.field] = field;
-  retVal[requiredIfParams.field_value] = fields[field];
+  retVal[requiredIfParams.field_value] = value;
 
   retVal["params"] = [];
   while (ruleParam.length > 0) {
     let other_field = ruleParam.shift();
     let other_field_value = ruleParam.shift();
-    let other_field_current_value = fields[other_field];
+    let other_field_current_value = getWild(fields, other_field);
     retVal["params"].push({
       field: other_field,
       value: other_field_value,

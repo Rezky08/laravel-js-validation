@@ -1,14 +1,15 @@
-import { resolveMessage } from "./messages";
 import { validate, availableRules, validationResult } from "./validators";
 import { paramMap, ruleParamRequired } from "./values";
 import React = require("react");
-
+import _ = require("lodash");
+import { get as getWild } from "get-wild";
 export default class instanceValidation {
   bind: any;
   fieldsName: string;
   rules: Object;
   errors: Object;
   messages: Object;
+  labels: Object;
 
   constructor(bind, fieldsName: string = "fields") {
     this.bind = bind;
@@ -25,8 +26,20 @@ export default class instanceValidation {
     this.messages = messages;
   }
 
+  useLabels(labels: Object) {
+    this.labels = labels;
+  }
+
+  getField(fieldPath: string): any {
+    return getWild(this.getFields(), fieldPath);
+  }
+
   getFields(): Object {
     return this.bind?.state?.fields;
+  }
+
+  getRuleByField(fieldPath: string) {
+    return this.rules[fieldPath];
   }
 
   getRule(rule: string) {
@@ -39,19 +52,24 @@ export default class instanceValidation {
     return onlyParam?.split(",");
   }
 
-  resolveValue(field: string, rule: availableRules) {
-    const fields = this.bind?.state?.fields;
+  resolveValue(fieldPath: string, value: any, rule: availableRules) {
     // require param
     let requireParam = ruleParamRequired[this.getRule(rule)];
     if (!!requireParam) {
       requireParam = paramMap[requireParam];
     } else {
       return {
-        field: field,
-        value: fields[field],
+        field: fieldPath,
+        value: value,
       };
     }
-    return requireParam(field, fields, this.getRuleParam(rule));
+    const requireParamFunction = requireParam.bind(this);
+    return requireParamFunction(
+      fieldPath,
+      value,
+      this.getFields(),
+      this.getRuleParam(rule)
+    );
   }
 
   resolveError(
@@ -75,32 +93,96 @@ export default class instanceValidation {
     }
   }
 
+  validateNestedWithIndex(
+    fieldValue: any,
+    keys: Array<string>,
+    currentPaths: Array<string> = [],
+    callback: Function = (fieldPath: string, value: any) => {}
+  ) {
+    let key = keys[0];
+    keys = keys.slice(1);
+
+    if (Array.isArray(fieldValue)) {
+      fieldValue.forEach((fieldElement, fieldKey) => {
+        let currentPath = key ? `${fieldKey}.${key}` : fieldKey.toString();
+
+        this.validateNestedWithIndex(
+          getWild(fieldValue, currentPath),
+          keys,
+          [...currentPaths, currentPath],
+          callback
+        );
+      });
+    } else if (key) {
+      currentPaths.push(key);
+      this.validateNestedWithIndex(
+        getWild(fieldValue, key),
+        keys,
+        currentPaths,
+        callback
+      );
+    } else {
+      let fieldPath = currentPaths.join(".");
+      callback(fieldPath, fieldValue);
+    }
+  }
+
   validateAll() {
-    Object.entries(this.rules).forEach(([key, value]) => {
-      this.validate(key, value);
+    Object.entries(this.rules).forEach(([key]) => {
+      this.validate(key);
     });
   }
 
-  validate(field: string, value: any): validationResult {
+  validateProcess(
+    fieldPath: string,
+    fieldValue: any,
+    rule: availableRules,
+    selectedRule: availableRules
+  ): validationResult {
+    fieldValue = this.resolveValue(fieldPath, fieldValue, rule);
+    let result = validate(fieldValue, selectedRule);
+    this.resolveError(fieldPath, rule, result, fieldValue);
+    return result;
+  }
+
+  validate(fieldPath: string): validationResult {
     let result: validationResult = {
       valid: false,
       message: null,
     };
-    if (typeof value === "string") {
-      value = value.split("|");
+    let rules = this.getRuleByField(fieldPath);
+
+    if (typeof rules === "string") {
+      rules = rules.split("|");
     }
 
     let fieldValue = this.getFields();
-    fieldValue = fieldValue[field];
+    let fieldPaths = fieldPath.split(".*.");
+    console.log(fieldPaths);
 
-    value?.forEach((rule: availableRules) => {
+    fieldValue = getWild(fieldValue, fieldPath);
+
+    rules?.forEach((rule: availableRules) => {
       let selectedRule = availableRules[this.getRule(rule)];
 
       if (!!selectedRule) {
-        fieldValue = this.resolveValue(field, rule);
-
-        result = validate(fieldValue, selectedRule);
-        this.resolveError(field, rule, result, fieldValue);
+        if (Array.isArray(fieldValue) && fieldValue?.length > 0) {
+          fieldValue.forEach((value, key) => {
+            result = this.validateProcess(
+              fieldPath.replace("*", key.toString()),
+              value,
+              rule,
+              selectedRule
+            );
+          });
+        } else {
+          result = this.validateProcess(
+            fieldPath,
+            fieldValue,
+            rule,
+            selectedRule
+          );
+        }
       }
     });
     return result;
@@ -113,8 +195,7 @@ export default class instanceValidation {
   ) {
     const node: Element = e?.currentTarget;
     let field = fieldName ?? node?.getAttribute("name");
-    let rule = this.rules[field];
-    let result = this.validate(field, rule);
+    let result = this.validate(field);
     if (typeof callback === "function") {
       callback(result);
     }
