@@ -50,17 +50,14 @@ var validationTest = /** @class */ (function () {
                                 name: "",
                                 point: 1,
                             },
-                            ,
                             {
                                 name: "test",
                                 point: 1,
                             },
-                            ,
                             {
                                 name: "test",
                                 point: 1,
                             },
-                            ,
                         ],
                     },
                     {
@@ -69,17 +66,14 @@ var validationTest = /** @class */ (function () {
                                 name: "",
                                 point: 1,
                             },
-                            ,
                             {
                                 name: "test",
                                 point: 1,
                             },
-                            ,
                             {
                                 name: "test",
                                 point: 1,
                             },
-                            ,
                         ],
                     },
                 ],
@@ -94,7 +88,7 @@ var validationTest = /** @class */ (function () {
             start_date: ["required"],
             end_date: ["required_if:name,2"],
             "nestedArrayObjectEmpty.*": ["required"],
-            "nestedArrayObject.*.name": ["required"],
+            "nestedArrayObjectNested.*.nested.*": ["required"],
             "nestedArrayObjectNested.*.nested.*.name": ["required_if:status,true"],
         });
         // this.instanceValidation.validateAll();

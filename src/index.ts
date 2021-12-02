@@ -93,6 +93,12 @@ export default class instanceValidation {
     }
   }
 
+  splitFieldPath(fieldPath: string) {
+    return fieldPath
+      .split(".*")
+      .map((value) => value.replace(/^\.+|\.+$/g, ""));
+  }
+
   validateNestedWithIndex(
     fieldValue: any,
     keys: Array<string>,
@@ -102,10 +108,9 @@ export default class instanceValidation {
     let key = keys[0];
     keys = keys.slice(1);
 
-    if (Array.isArray(fieldValue)) {
+    if (Array.isArray(fieldValue) && fieldValue.length > 0) {
       fieldValue.forEach((fieldElement, fieldKey) => {
         let currentPath = key ? `${fieldKey}.${key}` : fieldKey.toString();
-
         this.validateNestedWithIndex(
           getWild(fieldValue, currentPath),
           keys,
@@ -128,8 +133,8 @@ export default class instanceValidation {
   }
 
   validateAll() {
-    Object.entries(this.rules).forEach(([key]) => {
-      this.validate(key);
+    Object.entries(this.rules).forEach(([fieldPath, fieldRules]) => {
+      this.validate(fieldPath, fieldRules);
     });
   }
 
@@ -145,46 +150,36 @@ export default class instanceValidation {
     return result;
   }
 
-  validate(fieldPath: string): validationResult {
+  validate(
+    fieldPath: string,
+    rules?: string | Array<string>
+  ): validationResult {
     let result: validationResult = {
       valid: false,
       message: null,
     };
-    let rules = this.getRuleByField(fieldPath);
+    let arrayRules: Array<string> = [];
 
-    if (typeof rules === "string") {
-      rules = rules.split("|");
+    if (typeof rules == "string") {
+      arrayRules = rules.split("|");
+    } else {
+      arrayRules = rules;
     }
 
-    let fieldValue = this.getFields();
-    let fieldPaths = fieldPath.split(".*.");
-    console.log(fieldPaths);
+    this.validateNestedWithIndex(
+      this.getFields(),
+      this.splitFieldPath(fieldPath),
+      [],
+      (field: string, value: any) =>
+        arrayRules.forEach((rule: availableRules) => {
+          let selectedRule = availableRules[this.getRule(rule)];
+          if (!!selectedRule) {
+            result = this.validateProcess(field, value, rule, selectedRule);
+            console.log(field, value, rule, result.valid);
+          }
+        })
+    );
 
-    fieldValue = getWild(fieldValue, fieldPath);
-
-    rules?.forEach((rule: availableRules) => {
-      let selectedRule = availableRules[this.getRule(rule)];
-
-      if (!!selectedRule) {
-        if (Array.isArray(fieldValue) && fieldValue?.length > 0) {
-          fieldValue.forEach((value, key) => {
-            result = this.validateProcess(
-              fieldPath.replace("*", key.toString()),
-              value,
-              rule,
-              selectedRule
-            );
-          });
-        } else {
-          result = this.validateProcess(
-            fieldPath,
-            fieldValue,
-            rule,
-            selectedRule
-          );
-        }
-      }
-    });
     return result;
   }
 

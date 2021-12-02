@@ -77,12 +77,18 @@ var instanceValidation = /** @class */ (function () {
             this.bind.setState({ errors: this.errors });
         }
     };
+    instanceValidation.prototype.splitFieldPath = function (fieldPath) {
+        return fieldPath
+            .split(".*")
+            .map(function (value) { return value.replace(/^\.+|\.+$/g, ""); });
+    };
     instanceValidation.prototype.validateNestedWithIndex = function (fieldValue, keys, currentPaths, callback) {
         var _this = this;
         if (currentPaths === void 0) { currentPaths = []; }
+        if (callback === void 0) { callback = function (fieldPath, value) { }; }
         var key = keys[0];
         keys = keys.slice(1);
-        if (Array.isArray(fieldValue)) {
+        if (Array.isArray(fieldValue) && fieldValue.length > 0) {
             fieldValue.forEach(function (fieldElement, fieldKey) {
                 var currentPath = key ? "".concat(fieldKey, ".").concat(key) : fieldKey.toString();
                 _this.validateNestedWithIndex((0, get_wild_1.get)(fieldValue, currentPath), keys, __spreadArray(__spreadArray([], currentPaths, true), [currentPath], false), callback);
@@ -93,16 +99,15 @@ var instanceValidation = /** @class */ (function () {
             this.validateNestedWithIndex((0, get_wild_1.get)(fieldValue, key), keys, currentPaths, callback);
         }
         else {
-            // TODO : validate
-            console.log(currentPaths.join("."), fieldValue);
-            callback();
+            var fieldPath = currentPaths.join(".");
+            callback(fieldPath, fieldValue);
         }
     };
     instanceValidation.prototype.validateAll = function () {
         var _this = this;
         Object.entries(this.rules).forEach(function (_a) {
-            var key = _a[0];
-            _this.validate(key);
+            var fieldPath = _a[0], fieldRules = _a[1];
+            _this.validate(fieldPath, fieldRules);
         });
     };
     instanceValidation.prototype.validateProcess = function (fieldPath, fieldValue, rule, selectedRule) {
@@ -111,33 +116,27 @@ var instanceValidation = /** @class */ (function () {
         this.resolveError(fieldPath, rule, result, fieldValue);
         return result;
     };
-    instanceValidation.prototype.validate = function (fieldPath) {
+    instanceValidation.prototype.validate = function (fieldPath, rules) {
         var _this = this;
         var result = {
             valid: false,
             message: null,
         };
-        var rules = this.getRuleByField(fieldPath);
-        if (typeof rules === "string") {
-            rules = rules.split("|");
+        var arrayRules = [];
+        if (typeof rules == "string") {
+            arrayRules = rules.split("|");
         }
-        var fieldValue = this.getFields();
-        var fieldPaths = fieldPath.split(".*.");
-        console.log(fieldPaths);
-        fieldValue = (0, get_wild_1.get)(fieldValue, fieldPath);
-        this.validateNestedWithIndex(this.getFields(), fieldPaths);
-        rules === null || rules === void 0 ? void 0 : rules.forEach(function (rule) {
-            var selectedRule = validators_1.availableRules[_this.getRule(rule)];
-            if (!!selectedRule) {
-                if (Array.isArray(fieldValue) && (fieldValue === null || fieldValue === void 0 ? void 0 : fieldValue.length) > 0) {
-                    fieldValue.forEach(function (value, key) {
-                        result = _this.validateProcess(fieldPath.replace("*", key.toString()), value, rule, selectedRule);
-                    });
+        else {
+            arrayRules = rules;
+        }
+        this.validateNestedWithIndex(this.getFields(), this.splitFieldPath(fieldPath), [], function (field, value) {
+            return arrayRules.forEach(function (rule) {
+                var selectedRule = validators_1.availableRules[_this.getRule(rule)];
+                if (!!selectedRule) {
+                    result = _this.validateProcess(field, value, rule, selectedRule);
+                    console.log(field, value, rule, result.valid);
                 }
-                else {
-                    result = _this.validateProcess(fieldPath, fieldValue, rule, selectedRule);
-                }
-            }
+            });
         });
         return result;
     };
