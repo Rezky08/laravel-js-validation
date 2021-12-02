@@ -4,7 +4,7 @@ class validationTest {
     this.state = {
       fields: {
         name: "2",
-        status: true,
+        status: false,
         password: "abc",
         password_confirmation: "abc",
         start_date: new Date(),
@@ -71,13 +71,22 @@ class validationTest {
     this.instanceValidation = new ReactFormValidation(this);
     this.instanceValidation.useRules({
       name: "required|filled",
+      status: ["accepted_if:password,abc"],
       password: ["required", "confirmed"],
       password_confirmation: ["required"],
       start_date: ["required"],
       end_date: ["required_if:name,2"],
       "nestedArrayObjectEmpty.*": ["required"],
       "nestedArrayObjectNested.*.nested.*": ["required"],
-      "nestedArrayObjectNested.*.nested.*.name": ["required_if:status,true"],
+      "nestedArrayObjectNested.*.nested.*.name": ["required_if:status"],
+    });
+    this.instanceValidation.useLabels({
+      status: "Status",
+      nestedArrayObjectNested: {
+        nested: {
+          name: "Nested Object",
+        },
+      },
     });
     // this.instanceValidation.validateAll();
   }
@@ -86,7 +95,11 @@ class validationTest {
   }
   render() {
     // console.log(this.instanceValidation.getField("nestedArrayObject.*.name"));
-    this.instanceValidation.validateAll("password");
+    // this.instanceValidation.validateAll("password");
+    this.instanceValidation.eventHandler(
+      {},
+      "nestedArrayObjectNested.*.nested.*.name"
+    );
     console.log(this.state.errors);
   }
 }
