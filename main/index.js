@@ -21,6 +21,7 @@ var instanceValidation = /** @class */ (function () {
         this.messages = {};
         this.splittedRules = {};
         this.labels = {};
+        this.labelFieldName = "fieldLabel";
     }
     instanceValidation.prototype.splitRules = function () {
         var _this = this;
@@ -42,8 +43,12 @@ var instanceValidation = /** @class */ (function () {
     instanceValidation.prototype.useMessages = function (messages) {
         this.messages = messages;
     };
-    instanceValidation.prototype.useLabels = function (labels) {
+    instanceValidation.prototype.useLabels = function (labels, labelFieldName) {
         this.labels = labels;
+        this.labelFieldName = labelFieldName !== null && labelFieldName !== void 0 ? labelFieldName : this.labelFieldName;
+    };
+    instanceValidation.prototype.getLabel = function (fieldPath) {
+        return (0, get_wild_1.get)(this.labels, "".concat(this.getGeneralFieldPath(fieldPath), ".").concat(this.labelFieldName));
     };
     instanceValidation.prototype.getField = function (fieldPath) {
         return (0, get_wild_1.get)(this.getFields(), fieldPath);
@@ -51,6 +56,9 @@ var instanceValidation = /** @class */ (function () {
     instanceValidation.prototype.getFields = function () {
         var _a, _b;
         return ((_a = this.bind) === null || _a === void 0 ? void 0 : _a.state) ? (_b = this.bind) === null || _b === void 0 ? void 0 : _b.state[this.fieldsName] : {};
+    };
+    instanceValidation.prototype.getRuleFromSplittedRules = function (fieldPath) {
+        return this.splittedRules[this.getGeneralFieldPath(fieldPath)];
     };
     instanceValidation.prototype.getRuleByField = function (fieldPath) {
         return this.rules[fieldPath];
@@ -94,7 +102,9 @@ var instanceValidation = /** @class */ (function () {
         }
     };
     instanceValidation.prototype.getGeneralFieldPath = function (fieldPath) {
-        return this.splitFieldPath(fieldPath)
+        return fieldPath
+            .split(/[(\.\d)(\.\*)]/)
+            .map(function (value) { return value.replace(/^\.+|\.+$/g, ""); })
             .filter(function (value) { return !!value; })
             .join(".");
     };
@@ -132,7 +142,7 @@ var instanceValidation = /** @class */ (function () {
         });
     };
     instanceValidation.prototype.validateProcess = function (fieldPath, fieldValue, rule, selectedRule) {
-        var fieldLabel = (0, get_wild_1.get)(this.labels, this.getGeneralFieldPath(fieldPath));
+        var fieldLabel = this.getLabel(fieldPath);
         fieldValue = this.resolveValue(fieldLabel !== null && fieldLabel !== void 0 ? fieldLabel : fieldPath, fieldValue, rule);
         var result = (0, validators_1.validate)(fieldValue, selectedRule);
         this.resolveError(fieldPath, rule, result, fieldValue);
@@ -163,11 +173,10 @@ var instanceValidation = /** @class */ (function () {
         if (callback === void 0) { callback = function (results) { }; }
         var node = e === null || e === void 0 ? void 0 : e.currentTarget;
         var field = fieldPath !== null && fieldPath !== void 0 ? fieldPath : node === null || node === void 0 ? void 0 : node.getAttribute("name");
-        var generalField = this.getGeneralFieldPath(field);
-        var ruleFields = this.splittedRules[generalField];
+        var ruleFields = this.getRuleFromSplittedRules(fieldPath);
         var result = [];
         ruleFields.forEach(function (ruleField) {
-            var validationResult = _this.validate(ruleField, _this.getRuleByField(ruleField));
+            var validationResult = _this.validate(fieldPath, _this.getRuleByField(ruleField));
             result.push.apply(result, validationResult);
         });
         if (typeof callback === "function") {

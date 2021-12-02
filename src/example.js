@@ -78,13 +78,15 @@ class validationTest {
       end_date: ["required_if:name,2"],
       "nestedArrayObjectEmpty.*": ["required"],
       "nestedArrayObjectNested.*.nested.*": ["required"],
-      "nestedArrayObjectNested.*.nested.*.name": ["required_if:status"],
+      "nestedArrayObjectNested.*.nested.*.name": ["required_if:status,false"],
     });
     this.instanceValidation.useLabels({
       status: "Status",
       nestedArrayObjectNested: {
         nested: {
-          name: "Nested Object",
+          name: {
+            fieldLabel: "Nested Object",
+          },
         },
       },
     });
@@ -98,7 +100,7 @@ class validationTest {
     // this.instanceValidation.validateAll("password");
     this.instanceValidation.eventHandler(
       {},
-      "nestedArrayObjectNested.*.nested.*.name"
+      "nestedArrayObjectNested.*.nested.1.name"
     );
     console.log(this.state.errors);
   }

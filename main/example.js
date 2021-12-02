@@ -96,7 +96,9 @@ var validationTest = /** @class */ (function () {
             status: "Status",
             nestedArrayObjectNested: {
                 nested: {
-                    name: "Nested Object",
+                    name: {
+                        fieldLabel: "Nested Object",
+                    },
                 },
             },
         });
@@ -108,7 +110,7 @@ var validationTest = /** @class */ (function () {
     validationTest.prototype.render = function () {
         // console.log(this.instanceValidation.getField("nestedArrayObject.*.name"));
         // this.instanceValidation.validateAll("password");
-        this.instanceValidation.eventHandler({}, "nestedArrayObjectNested.*.nested.*.name");
+        this.instanceValidation.eventHandler({}, "nestedArrayObjectNested.*.nested.1.name");
         console.log(this.state.errors);
     };
     return validationTest;

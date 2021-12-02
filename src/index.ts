@@ -6,6 +6,7 @@ import { get as getWild } from "get-wild";
 export default class instanceValidation {
   bind: any;
   fieldsName: string;
+  labelFieldName: string;
   rules: Object;
   splittedRules: Object;
   errors: Object;
@@ -19,6 +20,7 @@ export default class instanceValidation {
     this.messages = {};
     this.splittedRules = {};
     this.labels = {};
+    this.labelFieldName = "fieldLabel";
   }
 
   splitRules() {
@@ -41,8 +43,16 @@ export default class instanceValidation {
     this.messages = messages;
   }
 
-  useLabels(labels: Object) {
+  useLabels(labels: Object, labelFieldName?: string) {
     this.labels = labels;
+    this.labelFieldName = labelFieldName ?? this.labelFieldName;
+  }
+
+  getLabel(fieldPath: string) {
+    return getWild(
+      this.labels,
+      `${this.getGeneralFieldPath(fieldPath)}.${this.labelFieldName}`
+    );
   }
 
   getField(fieldPath: string): any {
@@ -51,6 +61,10 @@ export default class instanceValidation {
 
   getFields(): Object {
     return this.bind?.state ? this.bind?.state[this.fieldsName] : {};
+  }
+
+  getRuleFromSplittedRules(fieldPath: string): Array<string> {
+    return this.splittedRules[this.getGeneralFieldPath(fieldPath)];
   }
 
   getRuleByField(fieldPath: string) {
@@ -109,7 +123,9 @@ export default class instanceValidation {
   }
 
   getGeneralFieldPath(fieldPath: string) {
-    return this.splitFieldPath(fieldPath)
+    return fieldPath
+      .split(/[(\.\d)(\.\*)]/)
+      .map((value) => value.replace(/^\.+|\.+$/g, ""))
       .filter((value) => !!value)
       .join(".");
   }
@@ -165,7 +181,7 @@ export default class instanceValidation {
     rule: availableRules,
     selectedRule: availableRules
   ): validationResult {
-    let fieldLabel = getWild(this.labels, this.getGeneralFieldPath(fieldPath));
+    let fieldLabel = this.getLabel(fieldPath);
 
     fieldValue = this.resolveValue(fieldLabel ?? fieldPath, fieldValue, rule);
     let result = validate(fieldValue, selectedRule);
@@ -209,12 +225,12 @@ export default class instanceValidation {
   ) {
     const node: Element = e?.currentTarget;
     let field = fieldPath ?? node?.getAttribute("name");
-    let generalField = this.getGeneralFieldPath(field);
-    let ruleFields: Array<string> = this.splittedRules[generalField];
+    let ruleFields: Array<string> = this.getRuleFromSplittedRules(fieldPath);
     let result: Array<validationResult> = [];
+
     ruleFields.forEach((ruleField) => {
       let validationResult = this.validate(
-        ruleField,
+        fieldPath,
         this.getRuleByField(ruleField)
       );
       result.push(...validationResult);
