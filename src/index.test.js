@@ -6,7 +6,10 @@ class validationTest {
   constructor() {
     this.state = {
       fields: {
-        name: faker.name.findName(),
+        name: faker.name
+          .findName()
+          .split(/[^a-zA-Z]/)
+          .join(""),
         password: faker.random.alphaNumeric(12),
         status: true,
         address: faker.address.streetAddress(true),
@@ -16,7 +19,7 @@ class validationTest {
       },
       errors: {},
       rules: {
-        name: "required",
+        name: "required|alpha",
         password: ["required", "confirmed"],
         status: ["required", "accepted"],
         address: ["required_if:status,true"],
