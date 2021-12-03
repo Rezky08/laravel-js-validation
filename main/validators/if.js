@@ -14,11 +14,11 @@ exports.default = (function (props, rule, validationCallback, castCallback) {
         var param = params_1[_i];
         var value_1 = param.value, current = param.current;
         var valueCasted = (_a = castCallback(value_1)) !== null && _a !== void 0 ? _a : value_1;
-        if (valueCasted === current) {
+        if (valueCasted ? valueCasted === current : !!current) {
             var callbackIsValid = validationCallback(props);
             if (!callbackIsValid.valid) {
                 other = param.field;
-                other_value = param.value;
+                other_value = valueCasted ? param.value : "exist";
                 isValid = false;
                 break;
             }

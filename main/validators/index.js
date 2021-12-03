@@ -10,6 +10,7 @@ var requiredIf_1 = __importDefault(require("./requiredIf"));
 var accepted_1 = __importDefault(require("./accepted"));
 var acceptedIf_1 = __importDefault(require("./acceptedIf"));
 var after_1 = __importDefault(require("./after"));
+var date_1 = __importDefault(require("./date"));
 var availableRules;
 (function (availableRules) {
     availableRules["required"] = "required";
@@ -17,6 +18,7 @@ var availableRules;
     availableRules["confirmed"] = "confirmed";
     availableRules["accepted"] = "accepted";
     availableRules["accepted_if"] = "accepted_if";
+    availableRules["date"] = "date";
     availableRules["after"] = "after";
 })(availableRules || (availableRules = {}));
 exports.availableRules = availableRules;
@@ -26,6 +28,7 @@ rules[availableRules.required_if] = requiredIf_1.default;
 rules[availableRules.confirmed] = confirmed_1.default;
 rules[availableRules.accepted] = accepted_1.default;
 rules[availableRules.accepted_if] = acceptedIf_1.default;
+rules[availableRules.date] = date_1.default;
 rules[availableRules.after] = after_1.default;
 var validate = function (value, rule) {
     var selectedRule = rules[rule];

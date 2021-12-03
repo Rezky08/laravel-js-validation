@@ -1,3 +1,7 @@
+import { get as getWild } from "get-wild";
+import { has } from "lodash";
+import date from "../validators/date";
+
 enum afterParams {
   value = "value",
 }
@@ -9,9 +13,14 @@ const paramMap = (
   ruleParam?: Array<string>
 ) => {
   const retVal = {};
+  let param = ruleParam.shift();
+  let isField = has(fields, param);
   retVal["field"] = field;
   retVal["value"] = new Date(value);
-  retVal["param"] = new Date(ruleParam.shift());
+  retVal["param"] = {
+    field: isField ? param : undefined,
+    value: isField ? new Date(getWild(fields, param)) : new Date(param),
+  };
   return retVal;
 };
 export { paramMap, afterParams };

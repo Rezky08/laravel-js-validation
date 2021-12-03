@@ -10,7 +10,9 @@ class validationTest {
         password: faker.random.alphaNumeric(12),
         status: true,
         address: faker.address.streetAddress(true),
-        isPrimaryAddress: false,
+        isPrimaryAddress: true,
+        startDate: new Date("2021-12-05"),
+        endDate: new Date("2021-12-04"),
       },
       errors: {},
       rules: {
@@ -19,6 +21,7 @@ class validationTest {
         status: ["required", "accepted"],
         address: ["required_if:status,true"],
         isPrimaryAddress: ["required_if:address", "accepted_if:status"],
+        startDate: ["after:endDate"],
       },
     };
     this.state.fields["password_confirmation"] = this.state.fields.password;
