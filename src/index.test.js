@@ -16,6 +16,13 @@ class validationTest {
         isPrimaryAddress: true,
         startDate: new Date("2021-12-05"),
         endDate: new Date("2021-12-04"),
+        detail: {
+          name: faker.name.findName(),
+          gender: faker.name.gender(),
+          phone: faker.phone.phoneNumber(),
+          color: faker.commerce.color(),
+        },
+        lists: [1, 2, 3, 4, 5],
       },
       errors: {},
       rules: {
@@ -26,6 +33,8 @@ class validationTest {
         isPrimaryAddress: ["required_if:address", "accepted_if:status"],
         startDate: ["after:endDate"],
         endDate: ["before:startDate"],
+        detail: ["array"],
+        lists: ["array"],
       },
     };
     this.state.fields["password_confirmation"] = this.state.fields.password;

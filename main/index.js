@@ -119,7 +119,7 @@ var instanceValidation = /** @class */ (function () {
         if (callback === void 0) { callback = function (fieldPath, value) { }; }
         var key = keys[0];
         keys = keys.slice(1);
-        if (Array.isArray(fieldValue) && fieldValue.length > 0) {
+        if (Array.isArray(fieldValue) && fieldValue.length > 0 && keys.length > 0) {
             fieldValue.forEach(function (fieldElement, fieldKey) {
                 var currentPath = key ? "".concat(fieldKey, ".").concat(key) : fieldKey.toString();
                 _this.validateNestedWithIndex((0, get_wild_1.get)(fieldValue, currentPath), keys, __spreadArray(__spreadArray([], currentPaths, true), [currentPath], false), callback);

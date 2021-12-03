@@ -15,6 +15,7 @@ var date_1 = __importDefault(require("./date"));
 var alpha_1 = __importDefault(require("./alpha"));
 var alphaDash_1 = __importDefault(require("./alphaDash"));
 var alphaNum_1 = __importDefault(require("./alphaNum"));
+var array_1 = __importDefault(require("./array"));
 var availableRules;
 (function (availableRules) {
     availableRules["required"] = "required";
@@ -28,6 +29,7 @@ var availableRules;
     availableRules["alpha"] = "alpha";
     availableRules["alpha_dash"] = "alpha_dash";
     availableRules["alpha_num"] = "alpha_num";
+    availableRules["array"] = "array";
 })(availableRules || (availableRules = {}));
 exports.availableRules = availableRules;
 var rules = {};
@@ -42,6 +44,7 @@ rules[availableRules.before] = before_1.default;
 rules[availableRules.alpha] = alpha_1.default;
 rules[availableRules.alpha_dash] = alphaDash_1.default;
 rules[availableRules.alpha_num] = alphaNum_1.default;
+rules[availableRules.array] = array_1.default;
 var validate = function (value, rule) {
     var selectedRule = rules[rule];
     return selectedRule(value);

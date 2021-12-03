@@ -9,6 +9,7 @@ import Date from "./date";
 import Alpha from "./alpha";
 import AlphaDash from "./alphaDash";
 import AlphaNum from "./alphaNum";
+import Array from "./array";
 enum availableRules {
   required = "required",
   required_if = "required_if",
@@ -21,6 +22,7 @@ enum availableRules {
   alpha = "alpha",
   alpha_dash = "alpha_dash",
   alpha_num = "alpha_num",
+  array = "array",
 }
 interface validationResult {
   valid: boolean;
@@ -39,6 +41,7 @@ rules[availableRules.before] = Before;
 rules[availableRules.alpha] = Alpha;
 rules[availableRules.alpha_dash] = AlphaDash;
 rules[availableRules.alpha_num] = AlphaNum;
+rules[availableRules.array] = Array;
 
 const validate = (value: any, rule: availableRules): validationResult => {
   let selectedRule = rules[rule];

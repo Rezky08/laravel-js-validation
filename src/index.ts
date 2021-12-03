@@ -145,7 +145,7 @@ export default class instanceValidation {
     let key = keys[0];
     keys = keys.slice(1);
 
-    if (Array.isArray(fieldValue) && fieldValue.length > 0) {
+    if (Array.isArray(fieldValue) && fieldValue.length > 0 && keys.length > 0) {
       fieldValue.forEach((fieldElement, fieldKey) => {
         let currentPath = key ? `${fieldKey}.${key}` : fieldKey.toString();
         this.validateNestedWithIndex(
