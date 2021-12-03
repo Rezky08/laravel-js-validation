@@ -2,8 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var _1 = require(".");
 var messages_1 = require("../messages");
+var emptyList = [null, undefined, "", [], {}];
 var validate = function (value) {
-    return !!value;
+    return !emptyList.includes(value);
 };
 var validateArray = function (values) {
     switch (true) {

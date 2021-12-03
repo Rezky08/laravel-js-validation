@@ -9,7 +9,7 @@ var required_1 = __importDefault(require("./required"));
 var castToBool = function (value) {
     var trueBool = ["true", "1"];
     var falseBool = ["false", "0"];
-    value = value.toLowerCase();
+    value = value === null || value === void 0 ? void 0 : value.toLowerCase();
     switch (true) {
         case trueBool.includes(value):
             return true;
@@ -30,11 +30,12 @@ exports.default = (function (_a) {
         var param = params_1[_i];
         var value_1 = param.value, current = param.current;
         var valueCasted = (_b = castToBool(value_1)) !== null && _b !== void 0 ? _b : value_1;
-        if (valueCasted === current) {
+        var condition = valueCasted ? valueCasted === current : !!current;
+        if (condition) {
             var requiredIsValid = (0, required_1.default)({ field: field, value: field_value });
             if (!requiredIsValid.valid) {
                 other = param.field;
-                other_value = param.value;
+                other_value = valueCasted ? param.value : "exist";
                 isValid = false;
                 break;
             }

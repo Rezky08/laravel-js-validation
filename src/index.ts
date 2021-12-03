@@ -175,7 +175,6 @@ export default class instanceValidation {
           let selectedRule = availableRules[this.getRule(rule)];
           if (!!selectedRule) {
             result = this.validateProcess(field, value, rule, selectedRule);
-            console.log(field, value, rule, result.valid);
           }
         })
     );

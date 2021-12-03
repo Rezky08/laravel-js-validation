@@ -6,7 +6,7 @@ import required from "./required";
 const castToBool = (value: string): boolean => {
   const trueBool = ["true", "1"];
   const falseBool = ["false", "0"];
-  value = value.toLowerCase();
+  value = value?.toLowerCase();
 
   switch (true) {
     case trueBool.includes(value):
@@ -27,13 +27,14 @@ export default ({ field, value, params }): validationResult => {
   for (let param of params) {
     const { value, current } = param;
     let valueCasted = castToBool(value) ?? value;
+    let condition = valueCasted ? valueCasted === current : !!current;
 
-    if (valueCasted === current) {
+    if (condition) {
       let requiredIsValid = required({ field: field, value: field_value });
 
       if (!requiredIsValid.valid) {
         other = param.field;
-        other_value = param.value;
+        other_value = valueCasted ? param.value : "exist";
         isValid = false;
         break;
       }

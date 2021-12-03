@@ -1,8 +1,10 @@
 import { availableRules, validationResult } from ".";
 import { resolveMessage } from "../messages";
 
+const emptyList = [null, undefined, "", [], {}];
+
 const validate = (value: any): boolean => {
-  return !!value;
+  return !emptyList.includes(value);
 };
 
 const validateArray = (values: Array<any>): boolean => {

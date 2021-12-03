@@ -134,7 +134,6 @@ var instanceValidation = /** @class */ (function () {
                 var selectedRule = validators_1.availableRules[_this.getRule(rule)];
                 if (!!selectedRule) {
                     result = _this.validateProcess(field, value, rule, selectedRule);
-                    console.log(field, value, rule, result.valid);
                 }
             });
         });
