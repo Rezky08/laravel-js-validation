@@ -33,6 +33,7 @@ var validationTest = /** @class */ (function () {
                 address: ["required_if:status,true"],
                 isPrimaryAddress: ["required_if:address", "accepted_if:status"],
                 startDate: ["after:endDate"],
+                endDate: ["before:startDate"],
             },
         };
         this.state.fields["password_confirmation"] = this.state.fields.password;

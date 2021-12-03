@@ -4,6 +4,7 @@ import RequiredIf from "./requiredIf";
 import Accepted from "./accepted";
 import AcceptedIf from "./acceptedIf";
 import After from "./after";
+import Before from "./before";
 import Date from "./date";
 enum availableRules {
   required = "required",
@@ -13,6 +14,7 @@ enum availableRules {
   accepted_if = "accepted_if",
   date = "date",
   after = "after",
+  before = "before",
 }
 interface validationResult {
   valid: boolean;
@@ -27,6 +29,7 @@ rules[availableRules.accepted] = Accepted;
 rules[availableRules.accepted_if] = AcceptedIf;
 rules[availableRules.date] = Date;
 rules[availableRules.after] = After;
+rules[availableRules.before] = Before;
 
 const validate = (value: any, rule: availableRules): validationResult => {
   let selectedRule = rules[rule];
