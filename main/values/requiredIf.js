@@ -2,6 +2,19 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.requiredIfParams = exports.paramMap = void 0;
 var get_wild_1 = require("get-wild");
+var castToBool = function (value) {
+    var trueBool = ["true", "1"];
+    var falseBool = ["false", "0"];
+    value = value === null || value === void 0 ? void 0 : value.toLowerCase();
+    switch (true) {
+        case trueBool.includes(value):
+            return true;
+        case falseBool.includes(value):
+            return false;
+        default:
+            return !!value == true ? value : true;
+    }
+};
 var requiredIfParams;
 (function (requiredIfParams) {
     requiredIfParams["field"] = "field";
@@ -21,7 +34,7 @@ var paramMap = function (field, value, fields, ruleParam) {
         var other_field_current_value = (0, get_wild_1.get)(fields, other_field);
         retVal["params"].push({
             field: other_field,
-            value: other_field_value,
+            value: castToBool(other_field_value),
             current: other_field_current_value,
         });
     }

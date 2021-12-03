@@ -6,7 +6,9 @@ import { get as getWild } from "get-wild";
 export default class instanceValidation {
   bind: any;
   fieldsName: string;
+  labelFieldName: string;
   rules: Object;
+  splittedRules: Object;
   errors: Object;
   messages: Object;
   labels: Object;
@@ -16,18 +18,41 @@ export default class instanceValidation {
     this.fieldsName = fieldsName;
     this.errors = {};
     this.messages = {};
+    this.splittedRules = {};
+    this.labels = {};
+    this.labelFieldName = "fieldLabel";
+  }
+
+  splitRules() {
+    Object.entries(this.rules).forEach(([fieldPath, rule]) => {
+      let generalPath = this.getGeneralFieldPath(fieldPath);
+      if (!!this.splittedRules[generalPath]) {
+        this.splittedRules[generalPath].push(fieldPath);
+      } else {
+        this.splittedRules[generalPath] = [fieldPath];
+      }
+    });
   }
 
   useRules(rules: Object) {
     this.rules = rules;
+    this.splitRules();
   }
 
   useMessages(messages: Object) {
     this.messages = messages;
   }
 
-  useLabels(labels: Object) {
+  useLabels(labels: Object, labelFieldName?: string) {
     this.labels = labels;
+    this.labelFieldName = labelFieldName ?? this.labelFieldName;
+  }
+
+  getLabel(fieldPath: string) {
+    return getWild(
+      this.labels,
+      `${this.getGeneralFieldPath(fieldPath)}.${this.labelFieldName}`
+    );
   }
 
   getField(fieldPath: string): any {
@@ -35,7 +60,11 @@ export default class instanceValidation {
   }
 
   getFields(): Object {
-    return this.bind?.state?.fields;
+    return this.bind?.state ? this.bind?.state[this.fieldsName] : {};
+  }
+
+  getRuleFromSplittedRules(fieldPath: string): Array<string> {
+    return this.splittedRules[this.getGeneralFieldPath(fieldPath)];
   }
 
   getRuleByField(fieldPath: string) {
@@ -93,6 +122,14 @@ export default class instanceValidation {
     }
   }
 
+  getGeneralFieldPath(fieldPath: string) {
+    return fieldPath
+      .split(/[(\.\d)(\.\*)]/)
+      .map((value) => value.replace(/^\.+|\.+$/g, ""))
+      .filter((value) => !!value)
+      .join(".");
+  }
+
   splitFieldPath(fieldPath: string) {
     return fieldPath
       .split(".*")
@@ -144,7 +181,9 @@ export default class instanceValidation {
     rule: availableRules,
     selectedRule: availableRules
   ): validationResult {
-    fieldValue = this.resolveValue(fieldPath, fieldValue, rule);
+    let fieldLabel = this.getLabel(fieldPath);
+
+    fieldValue = this.resolveValue(fieldLabel ?? fieldPath, fieldValue, rule);
     let result = validate(fieldValue, selectedRule);
     this.resolveError(fieldPath, rule, result, fieldValue);
     return result;
@@ -153,11 +192,8 @@ export default class instanceValidation {
   validate(
     fieldPath: string,
     rules?: string | Array<string>
-  ): validationResult {
-    let result: validationResult = {
-      valid: false,
-      message: null,
-    };
+  ): validationResult[] {
+    let result: Array<validationResult> = [];
     let arrayRules: Array<string> = [];
 
     if (typeof rules == "string") {
@@ -174,7 +210,7 @@ export default class instanceValidation {
         arrayRules.forEach((rule: availableRules) => {
           let selectedRule = availableRules[this.getRule(rule)];
           if (!!selectedRule) {
-            result = this.validateProcess(field, value, rule, selectedRule);
+            result.push(this.validateProcess(field, value, rule, selectedRule));
           }
         })
     );
@@ -184,12 +220,22 @@ export default class instanceValidation {
 
   eventHandler(
     e?: React.BaseSyntheticEvent,
-    fieldName?: string,
-    callback?: Function
+    fieldPath?: string,
+    callback: Function = (results: Array<validationResult>) => {}
   ) {
     const node: Element = e?.currentTarget;
-    let field = fieldName ?? node?.getAttribute("name");
-    let result = this.validate(field);
+    let field = fieldPath ?? node?.getAttribute("name");
+    let ruleFields: Array<string> = this.getRuleFromSplittedRules(fieldPath);
+    let result: Array<validationResult> = [];
+
+    ruleFields.forEach((ruleField) => {
+      let validationResult = this.validate(
+        fieldPath,
+        this.getRuleByField(ruleField)
+      );
+      result.push(...validationResult);
+    });
+
     if (typeof callback === "function") {
       callback(result);
     }

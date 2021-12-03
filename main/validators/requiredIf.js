@@ -20,7 +20,6 @@ var castToBool = function (value) {
     }
 };
 exports.default = (function (_a) {
-    var _b;
     var field = _a.field, value = _a.value, params = _a.params;
     var isValid = true;
     var field_value = value;
@@ -29,9 +28,13 @@ exports.default = (function (_a) {
     for (var _i = 0, params_1 = params; _i < params_1.length; _i++) {
         var param = params_1[_i];
         var value_1 = param.value, current = param.current;
+<<<<<<< HEAD
         var valueCasted = (_b = castToBool(value_1)) !== null && _b !== void 0 ? _b : value_1;
         var condition = valueCasted ? valueCasted === current : !!current;
         if (condition) {
+=======
+        if (value_1 === current) {
+>>>>>>> 758b19f75e291d14a2b0559ff7818281ec6b0b18
             var requiredIsValid = (0, required_1.default)({ field: field, value: field_value });
             if (!requiredIsValid.valid) {
                 other = param.field;
