@@ -4,7 +4,6 @@ var _1 = require(".");
 var messages_1 = require("../messages");
 exports.default = (function (_a) {
     var field = _a.field, value = _a.value;
-    console.log(value);
     var isValid = /^[a-zA-Z]+$/.test(value);
     return {
         valid: isValid,

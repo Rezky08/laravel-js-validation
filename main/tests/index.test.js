@@ -9,7 +9,7 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
-var ReactFormValidation = require("./index.js");
+var ReactFormValidation = require("../index.js");
 var faker = require("faker");
 faker.locale = "id_ID";
 var validationTest = /** @class */ (function () {
@@ -72,7 +72,6 @@ var validationTest = /** @class */ (function () {
         test("Validation has no errors", function () {
             expect(Object.keys(_this.state.errors).length).toBe(0);
         });
-        console.log(this.state.errors);
         // this.instanceValidation.validateAll("password");
     };
     return validationTest;

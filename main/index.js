@@ -11,17 +11,29 @@ var __spreadArray = (this && this.__spreadArray) || function (to, from, pack) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var validators_1 = require("./validators");
 var values_1 = require("./values");
+var React = require("react");
 var get_wild_1 = require("get-wild");
 var instanceValidation = /** @class */ (function () {
-    function instanceValidation(bind, fieldsName) {
-        if (fieldsName === void 0) { fieldsName = "fields"; }
-        this.bind = bind;
-        this.fieldsName = fieldsName;
+    function instanceValidation(bind) {
+        var _this = this;
+        this.bind = bind !== null && bind !== void 0 ? bind : React.Component.prototype;
+        this.fieldsName = "fields";
         this.errors = {};
         this.messages = {};
         this.splittedRules = {};
         this.labels = {};
         this.labelFieldName = "fieldLabel";
+        this.fields = {};
+        this.getFields = function () {
+            var _a, _b;
+            return ((_a = _this.bind) === null || _a === void 0 ? void 0 : _a.state) ? (_b = _this.bind) === null || _b === void 0 ? void 0 : _b.state[_this.fieldsName] : {};
+        };
+        this.setError = function (field, rule, message) {
+            var _a, _b;
+            if (typeof ((_a = _this.bind) === null || _a === void 0 ? void 0 : _a.setState) === "function") {
+                (_b = _this.bind) === null || _b === void 0 ? void 0 : _b.setState({ errors: _this.errors });
+            }
+        };
     }
     instanceValidation.prototype.splitRules = function () {
         var _this = this;
@@ -47,15 +59,26 @@ var instanceValidation = /** @class */ (function () {
         this.labels = labels;
         this.labelFieldName = labelFieldName !== null && labelFieldName !== void 0 ? labelFieldName : this.labelFieldName;
     };
+    instanceValidation.prototype.useFields = function (fieldsName) {
+        if (fieldsName === void 0) { fieldsName = "fields"; }
+        this.fieldsName = fieldsName;
+    };
+    instanceValidation.prototype.useGetFields = function (getFieldFunction) {
+        if (getFieldFunction === void 0) { getFieldFunction = function () {
+            return {};
+        }; }
+        this.getFields = getFieldFunction;
+    };
+    instanceValidation.prototype.useSetError = function (setErrorFunction) {
+        var _this = this;
+        if (setErrorFunction === void 0) { setErrorFunction = function () { }; }
+        this.setError = function () { return setErrorFunction(_this.errors); };
+    };
     instanceValidation.prototype.getLabel = function (fieldPath) {
         return (0, get_wild_1.get)(this.labels, "".concat(this.getGeneralFieldPath(fieldPath), ".").concat(this.labelFieldName));
     };
     instanceValidation.prototype.getField = function (fieldPath) {
         return (0, get_wild_1.get)(this.getFields(), fieldPath);
-    };
-    instanceValidation.prototype.getFields = function () {
-        var _a, _b;
-        return ((_a = this.bind) === null || _a === void 0 ? void 0 : _a.state) ? (_b = this.bind) === null || _b === void 0 ? void 0 : _b.state[this.fieldsName] : {};
     };
     instanceValidation.prototype.getRuleFromSplittedRules = function (fieldPath) {
         return this.splittedRules[this.getGeneralFieldPath(fieldPath)];
@@ -96,17 +119,12 @@ var instanceValidation = /** @class */ (function () {
             this.setError(null, null, "unset");
         }
     };
-    instanceValidation.prototype.setError = function (field, rule, message) {
-        if (typeof this.bind.setState === "function") {
-            this.bind.setState({ errors: this.errors });
-        }
-    };
     instanceValidation.prototype.getGeneralFieldPath = function (fieldPath) {
-        return fieldPath
+        return (fieldPath
             .split(/[(\.\d)(\.\*)]/)
             .map(function (value) { return value.replace(/^\.+|\.+$/g, ""); })
-            .filter(function (value) { return !!value; })
-            .join(".");
+            // .filter((value, index) => !!value)
+            .join("."));
     };
     instanceValidation.prototype.splitFieldPath = function (fieldPath) {
         return fieldPath

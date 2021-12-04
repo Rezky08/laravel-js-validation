@@ -1,4 +1,4 @@
-const ReactFormValidation = require("./index.js");
+const ReactFormValidation = require("../index.js");
 const faker = require("faker");
 faker.locale = "id_ID";
 
@@ -69,7 +69,6 @@ class validationTest {
     test("Validation has no errors", () => {
       expect(Object.keys(this.state.errors).length).toBe(0);
     });
-    console.log(this.state.errors);
     // this.instanceValidation.validateAll("password");
   }
 }

@@ -12,15 +12,31 @@ export default class instanceValidation {
   errors: Object;
   messages: Object;
   labels: Object;
+  fields: Object;
+  getFields: Function;
+  setError: Function;
 
-  constructor(bind, fieldsName: string = "fields") {
-    this.bind = bind;
-    this.fieldsName = fieldsName;
+  constructor(bind?: React.ReactInstance) {
+    this.bind = bind ?? React.Component.prototype;
+    this.fieldsName = "fields";
     this.errors = {};
     this.messages = {};
     this.splittedRules = {};
     this.labels = {};
     this.labelFieldName = "fieldLabel";
+    this.fields = {};
+    this.getFields = (): Object => {
+      return this.bind?.state ? this.bind?.state[this.fieldsName] : {};
+    };
+    this.setError = (
+      field?: string,
+      rule?: availableRules,
+      message?: string
+    ): void => {
+      if (typeof this.bind?.setState === "function") {
+        this.bind?.setState({ errors: this.errors });
+      }
+    };
   }
 
   splitRules() {
@@ -48,6 +64,22 @@ export default class instanceValidation {
     this.labelFieldName = labelFieldName ?? this.labelFieldName;
   }
 
+  useFields(fieldsName: string = "fields") {
+    this.fieldsName = fieldsName;
+  }
+
+  useGetFields(
+    getFieldFunction: Function = (): Object => {
+      return {};
+    }
+  ) {
+    this.getFields = getFieldFunction;
+  }
+
+  useSetError(setErrorFunction: Function = (): void => {}) {
+    this.setError = () => setErrorFunction(this.errors);
+  }
+
   getLabel(fieldPath: string) {
     return getWild(
       this.labels,
@@ -57,10 +89,6 @@ export default class instanceValidation {
 
   getField(fieldPath: string): any {
     return getWild(this.getFields(), fieldPath);
-  }
-
-  getFields(): Object {
-    return this.bind?.state ? this.bind?.state[this.fieldsName] : {};
   }
 
   getRuleFromSplittedRules(fieldPath: string): Array<string> {
@@ -116,18 +144,14 @@ export default class instanceValidation {
     }
   }
 
-  setError(field?: string, rule?: availableRules, message?: string): void {
-    if (typeof this.bind.setState === "function") {
-      this.bind.setState({ errors: this.errors });
-    }
-  }
-
   getGeneralFieldPath(fieldPath: string) {
-    return fieldPath
-      .split(/[(\.\d)(\.\*)]/)
-      .map((value) => value.replace(/^\.+|\.+$/g, ""))
-      .filter((value) => !!value)
-      .join(".");
+    return (
+      fieldPath
+        .split(/[(\.\d)(\.\*)]/)
+        .map((value) => value.replace(/^\.+|\.+$/g, ""))
+        // .filter((value, index) => !!value)
+        .join(".")
+    );
   }
 
   splitFieldPath(fieldPath: string) {
