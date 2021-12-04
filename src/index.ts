@@ -81,10 +81,13 @@ export default class instanceValidation {
   }
 
   getLabel(fieldPath: string) {
-    return getWild(
-      this.labels,
-      `${this.getGeneralFieldPath(fieldPath)}.${this.labelFieldName}`
-    );
+    return fieldPath;
+    return this.labels
+      ? getWild(
+          this.labels,
+          `${this.getGeneralFieldPath(fieldPath)}.${this.labelFieldName}`
+        )
+      : fieldPath;
   }
 
   getField(fieldPath: string): any {
@@ -145,13 +148,13 @@ export default class instanceValidation {
   }
 
   getGeneralFieldPath(fieldPath: string) {
-    return (
-      fieldPath
-        .split(/[(\.\d)(\.\*)]/)
-        .map((value) => value.replace(/^\.+|\.+$/g, ""))
-        // .filter((value, index) => !!value)
-        .join(".")
-    );
+    let fieldPaths = fieldPath
+      .split(/(\.\d)|(\.\*)/)
+      .map((value) => value.replace(/^\.+|\.+$/g, ""));
+
+    return fieldPaths
+      .filter((value, index) => !!value && index !== fieldPaths.length - 1)
+      .join(".");
   }
 
   splitFieldPath(fieldPath: string) {

@@ -75,7 +75,10 @@ var instanceValidation = /** @class */ (function () {
         this.setError = function () { return setErrorFunction(_this.errors); };
     };
     instanceValidation.prototype.getLabel = function (fieldPath) {
-        return (0, get_wild_1.get)(this.labels, "".concat(this.getGeneralFieldPath(fieldPath), ".").concat(this.labelFieldName));
+        return fieldPath;
+        return this.labels
+            ? (0, get_wild_1.get)(this.labels, "".concat(this.getGeneralFieldPath(fieldPath), ".").concat(this.labelFieldName))
+            : fieldPath;
     };
     instanceValidation.prototype.getField = function (fieldPath) {
         return (0, get_wild_1.get)(this.getFields(), fieldPath);
@@ -120,11 +123,12 @@ var instanceValidation = /** @class */ (function () {
         }
     };
     instanceValidation.prototype.getGeneralFieldPath = function (fieldPath) {
-        return (fieldPath
-            .split(/[(\.\d)(\.\*)]/)
-            .map(function (value) { return value.replace(/^\.+|\.+$/g, ""); })
-            // .filter((value, index) => !!value)
-            .join("."));
+        var fieldPaths = fieldPath
+            .split(/(\.\d)|(\.\*)/)
+            .map(function (value) { return value.replace(/^\.+|\.+$/g, ""); });
+        return fieldPaths
+            .filter(function (value, index) { return !!value && index !== fieldPaths.length - 1; })
+            .join(".");
     };
     instanceValidation.prototype.splitFieldPath = function (fieldPath) {
         return fieldPath

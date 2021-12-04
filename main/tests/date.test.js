@@ -15,3 +15,15 @@ validator.validateAll();
 test("validate before and after", function () {
     expect(errors).toStrictEqual({});
 });
+fields = {
+    startDate: "2021-12-04",
+    endDate: "2021-12-04",
+};
+validator.useRules({
+    startDate: "before_or_equal:endDate",
+    endDate: "after_or_equal:startDate",
+});
+validator.validateAll();
+test("validate before or equal & after or equal", function () {
+    expect(errors).toStrictEqual({});
+});
