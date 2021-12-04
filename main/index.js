@@ -75,7 +75,6 @@ var instanceValidation = /** @class */ (function () {
         this.setError = function () { return setErrorFunction(_this.errors); };
     };
     instanceValidation.prototype.getLabel = function (fieldPath) {
-        return fieldPath;
         return this.labels
             ? (0, get_wild_1.get)(this.labels, "".concat(this.getGeneralFieldPath(fieldPath), ".").concat(this.labelFieldName))
             : fieldPath;
@@ -127,7 +126,10 @@ var instanceValidation = /** @class */ (function () {
             .split(/(\.\d)|(\.\*)/)
             .map(function (value) { return value.replace(/^\.+|\.+$/g, ""); });
         return fieldPaths
-            .filter(function (value, index) { return !!value && index !== fieldPaths.length - 1; })
+            .filter(function (value, index) {
+            var isLast = index !== fieldPaths.length - 1;
+            return !isLast ? !!value : isLast && !!value;
+        })
             .join(".");
     };
     instanceValidation.prototype.splitFieldPath = function (fieldPath) {

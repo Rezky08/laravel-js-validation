@@ -16,16 +16,19 @@ export default (
   for (let param of params) {
     const { value, current } = param;
     let valueCasted = castCallback(value) ?? value;
+    other = param.field;
+    other_value = valueCasted ?? "exist";
 
     if (valueCasted ? valueCasted === current : !!current) {
       let callbackIsValid = validationCallback(props);
 
       if (!callbackIsValid.valid) {
-        other = param.field;
-        other_value = valueCasted ? param.value : "exist";
         isValid = false;
         break;
       }
+    } else {
+      isValid = false;
+      break;
     }
   }
 

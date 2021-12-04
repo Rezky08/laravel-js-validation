@@ -11,7 +11,7 @@ const castToBool = (value: string): any => {
     case falseBool.includes(value):
       return false;
     default:
-      return !!value == true ? value : true;
+      return value;
   }
 };
 

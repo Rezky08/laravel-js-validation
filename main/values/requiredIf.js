@@ -12,7 +12,7 @@ var castToBool = function (value) {
         case falseBool.includes(value):
             return false;
         default:
-            return !!value == true ? value : true;
+            return value;
     }
 };
 var requiredIfParams;

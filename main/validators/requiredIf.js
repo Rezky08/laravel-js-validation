@@ -15,14 +15,18 @@ exports.default = (function (_a) {
     for (var _i = 0, params_1 = params; _i < params_1.length; _i++) {
         var param = params_1[_i];
         var value_1 = param.value, current = param.current;
+        other = param.field;
+        other_value = value_1 !== null && value_1 !== void 0 ? value_1 : "exist";
         if (value_1 ? value_1 === current : !!current) {
             var requiredIsValid = (0, required_1.default)({ field: field, value: field_value });
             if (!requiredIsValid.valid) {
-                other = param.field;
-                other_value = value_1 ? param.value : "exist";
                 isValid = false;
                 break;
             }
+        }
+        else {
+            isValid = false;
+            break;
         }
     }
     return {

@@ -11,16 +11,18 @@ export default ({ field, value, params }): validationResult => {
 
   for (let param of params) {
     const { value, current } = param;
+    other = param.field;
+    other_value = value ?? "exist";
 
     if (value ? value === current : !!current) {
       let requiredIsValid = required({ field: field, value: field_value });
-
       if (!requiredIsValid.valid) {
-        other = param.field;
-        other_value = value ? param.value : "exist";
         isValid = false;
         break;
       }
+    } else {
+      isValid = false;
+      break;
     }
   }
 

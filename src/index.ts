@@ -81,7 +81,6 @@ export default class instanceValidation {
   }
 
   getLabel(fieldPath: string) {
-    return fieldPath;
     return this.labels
       ? getWild(
           this.labels,
@@ -153,7 +152,11 @@ export default class instanceValidation {
       .map((value) => value.replace(/^\.+|\.+$/g, ""));
 
     return fieldPaths
-      .filter((value, index) => !!value && index !== fieldPaths.length - 1)
+      .filter((value, index) => {
+        let isLast = index !== fieldPaths.length - 1;
+
+        return !isLast ? !!value : isLast && !!value;
+      })
       .join(".");
   }
 
