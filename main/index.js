@@ -176,6 +176,9 @@ var instanceValidation = /** @class */ (function () {
         var _this = this;
         var result = [];
         var arrayRules = [];
+        if (!rules) {
+            rules = this.getRuleFromSplittedRules(fieldPath);
+        }
         if (typeof rules == "string") {
             arrayRules = rules.split("|");
         }

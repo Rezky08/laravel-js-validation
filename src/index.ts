@@ -255,12 +255,12 @@ export default class instanceValidation {
   ) {
     const node: Element = e?.currentTarget;
     let field = fieldPath ?? node?.getAttribute("name");
-    let ruleFields: Array<string> = this.getRuleFromSplittedRules(fieldPath);
+    let ruleFields: Array<string> = this.getRuleFromSplittedRules(field);
     let result: Array<validationResult> = [];
 
     ruleFields.forEach((ruleField) => {
       let validationResult = this.validate(
-        fieldPath,
+        field,
         this.getRuleByField(ruleField)
       );
       result.push(...validationResult);

@@ -1,6 +1,6 @@
 {
   "name": "laravel-reactjs-validation",
-  "version": "v0.1.5-alpha",
+  "version": "v0.1.6-alpha",
   "description": "for validate input",
   "main": "main/index.js",
   "scripts": {
