@@ -1,6 +1,6 @@
 {
   "name": "laravel-reactjs-validation",
-  "version": "v0.1.4-alpha",
+  "version": "v0.1.5-alpha",
   "description": "for validate input",
   "main": "main/index.js",
   "scripts": {
@@ -9,10 +9,6 @@
   "author": "rezky",
   "license": "ISC",
   "dependencies": {
-    "@types/i18n-js": "^3.8.2",
-    "@types/lodash": "^4.14.177",
-    "@types/react": "latest",
-    "@types/react-dom": "latest",
     "get-wild": "^0.3.0",
     "i18n-js": "^3.8.0",
     "lodash": "^4.17.21",
@@ -20,6 +16,10 @@
     "react-dom": "latest"
   },
   "devDependencies": {
+    "@types/i18n-js": "^3.8.2",
+    "@types/lodash": "^4.14.177",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
     "@types/faker": "^5.5.9",
     "@types/jest": "^27.0.3",
     "faker": "^5.5.3"
