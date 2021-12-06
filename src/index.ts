@@ -259,7 +259,15 @@ export default class instanceValidation {
     callback: Function = (results: Array<validationResult>) => {}
   ) {
     const node: Element = e?.currentTarget;
+    if (!node) {
+      throw new Error("Node not found");
+    }
+
     let field = fieldPath ?? node?.getAttribute("name");
+    if (!field) {
+      throw new Error("Field Name not found");
+    }
+
     fieldLabel = fieldLabel ?? node.getAttribute("label");
     let ruleFields: Array<string> = this.getRuleFromSplittedRules(field);
     let result: Array<validationResult> = [];
