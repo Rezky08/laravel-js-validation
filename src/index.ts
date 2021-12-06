@@ -39,7 +39,7 @@ export default class instanceValidation {
     };
   }
 
-  splitRules() {
+  private splitRules() {
     Object.entries(this.rules).forEach(([fieldPath, rule]) => {
       let generalPath = this.getGeneralFieldPath(fieldPath);
       if (!!this.splittedRules[generalPath]) {
@@ -80,7 +80,7 @@ export default class instanceValidation {
     this.setError = () => setErrorFunction(this.errors);
   }
 
-  getLabel(fieldPath: string) {
+  private getLabel(fieldPath: string) {
     return this.labels
       ? getWild(
           this.labels,
@@ -89,29 +89,29 @@ export default class instanceValidation {
       : fieldPath;
   }
 
-  getField(fieldPath: string): any {
+  private getField(fieldPath: string): any {
     return getWild(this.getFields(), fieldPath);
   }
 
-  getRuleFromSplittedRules(fieldPath: string): Array<string> {
+  private getRuleFromSplittedRules(fieldPath: string): Array<string> {
     return this.splittedRules[this.getGeneralFieldPath(fieldPath)];
   }
 
-  getRuleByField(fieldPath: string) {
+  private getRuleByField(fieldPath: string) {
     return this.rules[fieldPath];
   }
 
-  getRule(rule: string) {
+  private getRule(rule: string) {
     let onlyRule = rule?.split(":")[0];
     return onlyRule;
   }
 
-  getRuleParam(rule: string) {
+  private getRuleParam(rule: string) {
     let onlyParam = rule?.split(":")[1];
     return onlyParam?.split(",");
   }
 
-  resolveValue(fieldPath: string, value: any, rule: availableRules) {
+  private resolveValue(fieldPath: string, value: any, rule: availableRules) {
     // require param
     let requireParam = ruleParamRequired[this.getRule(rule)];
     if (!!requireParam) {
@@ -131,7 +131,7 @@ export default class instanceValidation {
     );
   }
 
-  resolveError(
+  private resolveError(
     field: string,
     rule: availableRules,
     validationResult: validationResult,
@@ -146,7 +146,7 @@ export default class instanceValidation {
     }
   }
 
-  getGeneralFieldPath(fieldPath: string) {
+  private getGeneralFieldPath(fieldPath: string) {
     let fieldPaths = fieldPath
       .split(/(\.\d)|(\.\*)/)
       .map((value) => value.replace(/^\.+|\.+$/g, ""));
@@ -160,13 +160,13 @@ export default class instanceValidation {
       .join(".");
   }
 
-  splitFieldPath(fieldPath: string) {
+  private splitFieldPath(fieldPath: string) {
     return fieldPath
       .split(".*")
       .map((value) => value.replace(/^\.+|\.+$/g, ""));
   }
 
-  validateNestedWithIndex(
+  private validateNestedWithIndex(
     fieldValue: any,
     keys: Array<string>,
     currentPaths: Array<string> = [],
