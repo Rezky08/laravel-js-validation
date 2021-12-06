@@ -209,9 +209,10 @@ export default class instanceValidation {
     fieldPath: string,
     fieldValue: any,
     rule: availableRules,
-    selectedRule: availableRules
+    selectedRule: availableRules,
+    fieldLabel?: string
   ): validationResult {
-    let fieldLabel = this.getLabel(fieldPath);
+    fieldLabel = fieldLabel ?? this.getLabel(fieldPath);
 
     fieldValue = this.resolveValue(fieldLabel ?? fieldPath, fieldValue, rule);
     let result = validate(fieldValue, selectedRule);
@@ -221,7 +222,8 @@ export default class instanceValidation {
 
   validate(
     fieldPath: string,
-    rules?: string | Array<string>
+    rules?: string | Array<string>,
+    fieldLabel?: string
   ): validationResult[] {
     let result: Array<validationResult> = [];
     let arrayRules: Array<string> = [];
@@ -240,7 +242,9 @@ export default class instanceValidation {
         arrayRules.forEach((rule: availableRules) => {
           let selectedRule = availableRules[this.getRule(rule)];
           if (!!selectedRule) {
-            result.push(this.validateProcess(field, value, rule, selectedRule));
+            result.push(
+              this.validateProcess(field, value, rule, selectedRule, fieldLabel)
+            );
           }
         })
     );
@@ -251,17 +255,20 @@ export default class instanceValidation {
   eventHandler(
     e?: React.BaseSyntheticEvent,
     fieldPath?: string,
+    fieldLabel?: string,
     callback: Function = (results: Array<validationResult>) => {}
   ) {
     const node: Element = e?.currentTarget;
     let field = fieldPath ?? node?.getAttribute("name");
+    fieldLabel = fieldLabel ?? node.getAttribute("label");
     let ruleFields: Array<string> = this.getRuleFromSplittedRules(field);
     let result: Array<validationResult> = [];
 
     ruleFields.forEach((ruleField) => {
       let validationResult = this.validate(
         field,
-        this.getRuleByField(ruleField)
+        this.getRuleByField(ruleField),
+        fieldLabel
       );
       result.push(...validationResult);
     });

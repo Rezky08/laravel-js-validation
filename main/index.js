@@ -165,20 +165,17 @@ var instanceValidation = /** @class */ (function () {
             _this.validate(fieldPath, fieldRules);
         });
     };
-    instanceValidation.prototype.validateProcess = function (fieldPath, fieldValue, rule, selectedRule) {
-        var fieldLabel = this.getLabel(fieldPath);
+    instanceValidation.prototype.validateProcess = function (fieldPath, fieldValue, rule, selectedRule, fieldLabel) {
+        fieldLabel = fieldLabel !== null && fieldLabel !== void 0 ? fieldLabel : this.getLabel(fieldPath);
         fieldValue = this.resolveValue(fieldLabel !== null && fieldLabel !== void 0 ? fieldLabel : fieldPath, fieldValue, rule);
         var result = (0, validators_1.validate)(fieldValue, selectedRule);
         this.resolveError(fieldPath, rule, result, fieldValue);
         return result;
     };
-    instanceValidation.prototype.validate = function (fieldPath, rules) {
+    instanceValidation.prototype.validate = function (fieldPath, rules, fieldLabel) {
         var _this = this;
         var result = [];
         var arrayRules = [];
-        if (!rules) {
-            rules = this.getRuleFromSplittedRules(fieldPath);
-        }
         if (typeof rules == "string") {
             arrayRules = rules.split("|");
         }
@@ -189,21 +186,22 @@ var instanceValidation = /** @class */ (function () {
             return arrayRules.forEach(function (rule) {
                 var selectedRule = validators_1.availableRules[_this.getRule(rule)];
                 if (!!selectedRule) {
-                    result.push(_this.validateProcess(field, value, rule, selectedRule));
+                    result.push(_this.validateProcess(field, value, rule, selectedRule, fieldLabel));
                 }
             });
         });
         return result;
     };
-    instanceValidation.prototype.eventHandler = function (e, fieldPath, callback) {
+    instanceValidation.prototype.eventHandler = function (e, fieldPath, fieldLabel, callback) {
         var _this = this;
         if (callback === void 0) { callback = function (results) { }; }
         var node = e === null || e === void 0 ? void 0 : e.currentTarget;
         var field = fieldPath !== null && fieldPath !== void 0 ? fieldPath : node === null || node === void 0 ? void 0 : node.getAttribute("name");
-        var ruleFields = this.getRuleFromSplittedRules(fieldPath);
+        fieldLabel = fieldLabel !== null && fieldLabel !== void 0 ? fieldLabel : node.getAttribute("label");
+        var ruleFields = this.getRuleFromSplittedRules(field);
         var result = [];
         ruleFields.forEach(function (ruleField) {
-            var validationResult = _this.validate(fieldPath, _this.getRuleByField(ruleField));
+            var validationResult = _this.validate(field, _this.getRuleByField(ruleField), fieldLabel);
             result.push.apply(result, validationResult);
         });
         if (typeof callback === "function") {
