@@ -4,7 +4,7 @@ faker.locale = "id_ID";
 var validator = new ReactFormValidation.default();
 var fields = {
     field: faker.name.findName(),
-    field2: "",
+    field2: faker.name.findName(),
 };
 var errors = {};
 validator.useGetFields(function () { return fields; });
