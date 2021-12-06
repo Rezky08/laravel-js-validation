@@ -196,7 +196,13 @@ var instanceValidation = /** @class */ (function () {
         var _this = this;
         if (callback === void 0) { callback = function (results) { }; }
         var node = e === null || e === void 0 ? void 0 : e.currentTarget;
+        if (!node) {
+            throw new Error("Node not found");
+        }
         var field = fieldPath !== null && fieldPath !== void 0 ? fieldPath : node === null || node === void 0 ? void 0 : node.getAttribute("name");
+        if (!field) {
+            throw new Error("Field Name not found");
+        }
         fieldLabel = fieldLabel !== null && fieldLabel !== void 0 ? fieldLabel : node.getAttribute("label");
         var ruleFields = this.getRuleFromSplittedRules(field);
         var result = [];
