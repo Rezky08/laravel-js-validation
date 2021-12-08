@@ -28,10 +28,11 @@ var instanceValidation = /** @class */ (function () {
             var _a, _b;
             return ((_a = _this.bind) === null || _a === void 0 ? void 0 : _a.state) ? (_b = _this.bind) === null || _b === void 0 ? void 0 : _b.state[_this.fieldsName] : {};
         };
+        this.setErrorCallback = function () { };
         this.setError = function (field, rule, message) {
             var _a, _b;
             if (typeof ((_a = _this.bind) === null || _a === void 0 ? void 0 : _a.setState) === "function") {
-                (_b = _this.bind) === null || _b === void 0 ? void 0 : _b.setState({ errors: _this.errors });
+                (_b = _this.bind) === null || _b === void 0 ? void 0 : _b.setState({ errors: _this.errors }, _this.setErrorCallback);
             }
         };
     }
@@ -73,6 +74,11 @@ var instanceValidation = /** @class */ (function () {
         var _this = this;
         if (setErrorFunction === void 0) { setErrorFunction = function () { }; }
         this.setError = function () { return setErrorFunction(_this.errors); };
+    };
+    instanceValidation.prototype.useSetErrorCallback = function (setErrorCallbackFunction) {
+        var _this = this;
+        if (setErrorCallbackFunction === void 0) { setErrorCallbackFunction = function () { }; }
+        this.setErrorCallback = function () { return setErrorCallbackFunction(_this.errors); };
     };
     instanceValidation.prototype.getLabel = function (fieldPath) {
         return this.labels

@@ -15,6 +15,7 @@ export default class instanceValidation {
   fields: Object;
   getFields: Function;
   setError: Function;
+  setErrorCallback: Function;
 
   constructor(bind?: React.ReactInstance) {
     this.bind = bind ?? React.Component.prototype;
@@ -28,13 +29,14 @@ export default class instanceValidation {
     this.getFields = (): Object => {
       return this.bind?.state ? this.bind?.state[this.fieldsName] : {};
     };
+    this.setErrorCallback = () => {};
     this.setError = (
       field?: string,
       rule?: availableRules,
       message?: string
     ): void => {
       if (typeof this.bind?.setState === "function") {
-        this.bind?.setState({ errors: this.errors });
+        this.bind?.setState({ errors: this.errors }, this.setErrorCallback);
       }
     };
   }
@@ -78,6 +80,9 @@ export default class instanceValidation {
 
   useSetError(setErrorFunction: Function = (): void => {}) {
     this.setError = () => setErrorFunction(this.errors);
+  }
+  useSetErrorCallback(setErrorCallbackFunction: Function = (): void => {}) {
+    this.setErrorCallback = () => setErrorCallbackFunction(this.errors);
   }
 
   private getLabel(fieldPath: string) {

@@ -3,9 +3,10 @@ const ReactFormValidation = require("../index.js");
 const validator = new ReactFormValidation.default();
 let fields = {};
 let errors = {};
-
+validator.useSetErrorCallback((errors) => console.log(errors));
 validator.useGetFields(() => fields);
 validator.useSetError((errorList) => (errors = errorList));
+console.log(validator.setErrorCallback);
 
 test("validate SUCCESS before and after", () => {
   fields = {
